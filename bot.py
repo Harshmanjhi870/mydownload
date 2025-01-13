@@ -1,4 +1,3 @@
-
 from pyrogram import Client, filters
 import os
 from pyrogram.types import Message
@@ -11,7 +10,7 @@ BOT_TOKEN = "7890579887:AAHSKvEYwD1HJRmrTssbanUlq7TGwOyBlSE"  # Replace with you
 app = Client("file_download_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 # File Download Directory
-DOWNLOAD_DIR = "downloads/"
+DOWNLOAD_DIR = os.path.expanduser("~/storage/shared/TelegramDownloads/")  # Save to phone storage
 
 # Ensure download directory exists
 if not os.path.exists(DOWNLOAD_DIR):
@@ -21,11 +20,11 @@ async def progress(current, total, message: Message):
     """
     Progress callback to show download percentage in real-time.
     """
-    percentage = (current / total) * 100
     try:
+        percentage = (current / total) * 100
         await message.edit_text(f"Downloading... {percentage:.2f}%")
-    except:
-        pass  # Ignore exceptions to avoid spam errors
+    except Exception as e:
+        print(f"Progress update error: {e}")
 
 @app.on_message(filters.command("download") & filters.reply)
 async def download_file(client, message):
@@ -72,7 +71,9 @@ async def download_file(client, message):
 
 @app.on_message(filters.command("start"))
 async def start(client, message):
-    await message.reply_text("Welcome! Reply to any file, video, or photo with /download to save it locally with progress updates.")
+    await message.reply_text(
+        "Welcome! Reply to any file, video, or photo with /download to save it locally with progress updates."
+    )
 
 if __name__ == "__main__":
     app.run()
