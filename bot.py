@@ -8,9 +8,7 @@ API_HASH = "709f3c9d34d83873d3c7e76cdd75b866"  # Replace with your API_HASH
 BOT_TOKEN = "7890579887:AAHSKvEYwD1HJRmrTssbanUlq7TGwOyBlSE"  # Replace with your bot token
 
 app = Client("file_download_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
-
-# File Download Directory
-DOWNLOAD_DIR = "/data/data/com.termux/files/home/TelegramDownloads/"
+DOWNLOAD_DIR = "/storage/emulated/0/TelegramDownloads/"
 
 # Ensure download directory exists
 if not os.path.exists(DOWNLOAD_DIR):
@@ -22,7 +20,11 @@ async def progress(current, total, message: Message):
     """
     try:
         # Avoid division by zero
-        percentage = (current / max(total, 1)) * 100
+        if total > 0:
+            percentage = (current / total) * 100
+        else:
+            percentage = 0
+        # Update progress in the message
         await message.edit_text(f"Downloading... {percentage:.2f}%")
     except Exception as e:
         print(f"Progress update error: {e}")
