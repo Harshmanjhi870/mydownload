@@ -10,7 +10,7 @@ BOT_TOKEN = "7890579887:AAHSKvEYwD1HJRmrTssbanUlq7TGwOyBlSE"  # Replace with you
 app = Client("file_download_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 # File Download Directory
-DOWNLOAD_DIR = os.path.expanduser("~/storage/shared/TelegramDownloads/")  # Save to phone storage
+DOWNLOAD_DIR = os.path.expanduser("~/storage/shared/TelegramDownloads/")
 
 # Ensure download directory exists
 if not os.path.exists(DOWNLOAD_DIR):
@@ -21,10 +21,11 @@ async def progress(current, total, message: Message):
     Progress callback to show download percentage in real-time.
     """
     try:
-        percentage = (current / total) * 100
-        await message.edit_text(f"Downloading... {percentage:.2f}%")
-    except Exception as e:
-        print(f"Progress update error: {e}")
+        if total > 0:
+            percentage = (current / total) * 100
+            await message.edit_text(f"Downloading... {percentage:.2f}%")
+    except ZeroDivisionError:
+        pass  # Ignore division by zero error
 
 @app.on_message(filters.command("download") & filters.reply)
 async def download_file(client, message):
